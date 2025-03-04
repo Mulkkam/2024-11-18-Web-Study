@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans SYSTEM "https://github.com/Mulkkam/2024-11-18-Web-Study.git">
 <beans>
   <context:component-scan basePackage="com.sist.model"/>
 </beans>
