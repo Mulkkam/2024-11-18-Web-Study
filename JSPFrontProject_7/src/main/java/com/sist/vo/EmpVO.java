@@ -4,6 +4,15 @@ public class EmpVO {
     private int empno,sal;
     private String ename,job,dbday;
     private Date hiredate;
+    private DeptVO dvo=new DeptVO();
+    private SalGradeVO svo=new SalGradeVO();
+    
+	public String getDbday() {
+		return dbday;
+	}
+	public void setDbday(String dbday) {
+		this.dbday = dbday;
+	}
 	public int getEmpno() {
 		return empno;
 	}
@@ -28,18 +37,11 @@ public class EmpVO {
 	public void setJob(String job) {
 		this.job = job;
 	}
-	public String getDbday() {
-		return dbday;
-	}
-	public void setDbday(String dbday) {
-		this.dbday = dbday;
-	}
 	public Date getHiredate() {
 		return hiredate;
 	}
 	public void setHiredate(Date hiredate) {
 		this.hiredate = hiredate;
 	}
-	  
-  
+	   
 }
