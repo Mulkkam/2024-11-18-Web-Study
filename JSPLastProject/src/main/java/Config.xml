@@ -42,6 +42,7 @@
    <!-- sql문장  -->
    <mappers>
      <mapper resource="com/sist/mapper/food-mapper.xml"/>
+     <mapper resource="com/sist/mapper/seoul-mapper.xml"/>
    </mappers>
    <!-- 
           동적 쿼리 

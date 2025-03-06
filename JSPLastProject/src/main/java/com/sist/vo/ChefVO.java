@@ -1,57 +1,18 @@
-package com.sist.main;
+package com.sist.vo;
+
+import lombok.Data;
+
 /*
- *   CREATE TABLE recipe(
-	   no NUMBER,
-	   title VARCHAR2(4000) CONSTRAINT recipe_title_nn NOT NULL,
-	   poster VARCHAR2(260) CONSTRAINT recipe_poster_nn NOT NULL,
-	   chef VARCHAR2(500) CONSTRAINT recipe_chef_nn NOT NULL,
-	   link VARCHAR2(300),
-	   hit NUMBER DEFAULT 0,
-	   CONSTRAINT recipe_no_pk PRIMARY KEY(no)
-	);
+ *      NO        NOT NULL NUMBER        
+		CHEF      NOT NULL VARCHAR2(300) 
+		POSTER             VARCHAR2(260) 
+		MEM_CONT1          VARCHAR2(30)  
+		MEM_CONT3          VARCHAR2(30)  
+		MEM_CONT7          VARCHAR2(30)  
+		MEM_CONT2          VARCHAR2(30) 
  */
+@Data
 public class ChefVO {
-	private String poster;
-    private String chef;
-    private String mem_cont1;
-    private String mem_cont3;
-    private String mem_cont7;
-    private String mem_cont2;
-	public String getPoster() {
-		return poster;
-	}
-	public void setPoster(String poster) {
-		this.poster = poster;
-	}
-	public String getChef() {
-		return chef;
-	}
-	public void setChef(String chef) {
-		this.chef = chef;
-	}
-	public String getMem_cont1() {
-		return mem_cont1;
-	}
-	public void setMem_cont1(String mem_cont1) {
-		this.mem_cont1 = mem_cont1;
-	}
-	public String getMem_cont3() {
-		return mem_cont3;
-	}
-	public void setMem_cont3(String mem_cont3) {
-		this.mem_cont3 = mem_cont3;
-	}
-	public String getMem_cont7() {
-		return mem_cont7;
-	}
-	public void setMem_cont7(String mem_cont7) {
-		this.mem_cont7 = mem_cont7;
-	}
-	public String getMem_cont2() {
-		return mem_cont2;
-	}
-	public void setMem_cont2(String mem_cont2) {
-		this.mem_cont2 = mem_cont2;
-	}
-    
+   private int no;
+   private String chef,poster,mem_cont1,mem_cont3,mem_cont7,mem_cont2;
 }
