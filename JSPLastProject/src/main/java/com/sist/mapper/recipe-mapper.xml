@@ -1,3 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sist.mapper.recipe-mapper"></mapper>
+<mapper namespace="com.sist.mapper.recipe-mapper">
+  <!--  오늘의 쉐프 -->
+  <select id="recipeTodayChef" resultType="ChefVO">
+    SELECT * 
+    FROM (SELECT * FROM chef ORDER BY DBMS_RANDOM.RANDOM)
+    WHERE rownum&lt;=1
+  </select>
+  <!-- recipe 7개 -->
+  <select id="recipeData7" resultType="RecipeVO">
+    SELECT no,title,poster,chef,hit,likecount,replycount,rownum
+    FROM (SELECT * FROM recipe ORDER BY hit DESC)
+    WHERE rownum&lt;=7
+  </select>
+  <!-- recipe목록 -->
+  <select id="recipeListData" resultType="RecipeVO" parameterType="hashmap">
+   SELECT no,title,poster,chef,hit,likecount,replycount,num
+   FROM (SELECT no,title,poster,chef,hit,likecount,replycount,rownum as num 
+   FROM (SELECT /*+ INDEX_ASC(recipe recipe_no_pk)*/no,title,poster,chef,hit,likecount,replycount
+   FROM recipe))
+   WHERE num BETWEEN #{start} AND #{end}
+  </select>
+  <select id="recipeTotalPage" resultType="int">
+   SELECT CEIL(COUNT(*)/12.0) FROM recipe
+  </select>
+  <!-- 쉐프 목록 
+        NO        NOT NULL NUMBER        
+		CHEF      NOT NULL VARCHAR2(300) 
+		POSTER             VARCHAR2(260) 
+		MEM_CONT1          VARCHAR2(30)  
+		MEM_CONT3          VARCHAR2(30)  
+		MEM_CONT7          VARCHAR2(30)  
+		MEM_CONT2          VARCHAR2(30)
+  -->
+  <select id="recipeChefListData" resultType="ChefVO" parameterType="hashmap">
+    SELECT no,chef,poster,mem_cont1,mem_cont3,mem_cont7,
+           mem_cont2,num
+    FROM (SELECT no,chef,poster,mem_cont1,mem_cont3,mem_cont7,
+           mem_cont2,rownum as num
+    FROM (SELECT no,chef,poster,mem_cont1,mem_cont3,mem_cont7,
+           mem_cont2
+    FROM chef ORDER BY no ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+  </select>
+  <select id="recipeChefTotalPage" resultType="int">
+   SELECT CEIL(COUNT(*)/30.0) FROM chef
+  </select>
+</mapper>

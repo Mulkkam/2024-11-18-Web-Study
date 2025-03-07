@@ -1,20 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
-<c:choose>
- <c:when test="${mode==1 }">
-  <c:set var="title" value="명소"/>
- </c:when>
- <c:when test="${mode==2 }">
-  <c:set var="title" value="자연 & 관광"/>
- </c:when>
- <c:when test="${mode==3 }">
-  <c:set var="title" value="쇼핑"/>
- </c:when>
- <c:when test="${mode==4 }">
-  <c:set var="title" value="음식"/>
- </c:when>
-</c:choose>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +14,7 @@
             <div class="row h-100 align-items-center">
                 <div class="col-12">
                     <div class="bradcumb-title text-center">
-                        <h2>서울 여행 (${title })</h2>
+                        <h2>레시피 목록</h2>
                     </div>
                 </div>
             </div>
@@ -61,20 +47,22 @@
                     <div class="single-post wow fadeInUp" data-wow-delay="0.1s">
                         <!-- Post Thumb -->
                         <div class="post-thumb">
-                            <img src="${vo.poster }" style="width:350px;height: 250px ">
+                          <a href="#">
+                            <img src="${vo.poster }" alt="">
+                          </a>
                         </div>
                         <!-- Post Content -->
                         <div class="post-content">
                             <div class="post-meta d-flex">
                                 <div class="post-author-date-area d-flex">
-                                    
-                                    <!-- <div class="post-author">
-                                        <a href="#"></a>
+                                    <!-- Post Author -->
+                                    <div class="post-author">
+                                        <a href="#">${vo.chef }</a>
                                     </div>
-                                    
+                                    <!-- Post Date -->
                                     <div class="post-date">
-                                        <a href="#"></a>
-                                    </div> -->
+                                        <a href="#">${vo.hit }</a>
+                                    </div>
                                 </div>
                                 <!-- Post Comment & Share Area -->
                                 <div class="post-comment-share-area d-flex">
@@ -106,17 +94,17 @@
                             <ul class="pagination">
                                <c:if test="${startPage>1 }">
                                  <li class="page-item">
-                                    <a class="page-link" href="../seoul/seoul_list.do?mode=${mode }&page=${startPage-1}">이전 <i class="fa fa-angle-double-left" aria-hidden="true"></i></a>
+                                    <a class="page-link" href="../recipe/recipe_list.do?page=${startPage-1 }">이전 <i class="fa fa-angle-double-left" aria-hidden="true"></i></a>
                                  </li>
                                 </c:if>
                                 
                                 <c:forEach var="i" begin="${startPage }" end="${endPage }">
-                                 <li class="page-item ${i==curpage?'active':'' }"><a class="page-link" href="../seoul/seoul_list.do?mode=${mode }&page=${i}">${i }</a></li>
+                                 <li class="page-item ${i==curpage?'active':'' }"><a class="page-link" href="../recipe/recipe_list.do?page=${i }">${i }</a></li>
                                 </c:forEach>
                                 
                                 <c:if test="${endPage<totalpage }">
                                  <li class="page-item">
-                                    <a class="page-link" href="../seoul/seoul_list.do?mode=${mode }&page=${endPage+1}">다음 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                    <a class="page-link" href="../recipe/recipe_list.do?page=${endPage+1 }">다음 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
                                  </li>
                                 </c:if>
                             </ul>
