@@ -1,59 +1,64 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%--
+   String
+   StringBuffer
+ --%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<style type="text/css">
+a:hover{
+  cursor: pointer;
+}
+</style>
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript">
+
 $(function(){
 	$('#ss').val('마포')
+	commons(1)
+	
+	$('#findBtn').click(function(){
+		commons(1)
+	})
+	$('#ss').keydown(function(e){
+		if(e.keyCode==13)
+		{
+			commons(1)
+		}
+	})
+})
+function commons(page)
+{
 	let fd=$('#fd').val()
 	let ss=$('#ss').val()
 	$.ajax({
 		type:'post',
 		url:'../food/food_find_ajax.do',
-		data:{"fd":fd,"ss":ss,"page":1},
+		data:{"fd":fd,"ss":ss,"page":page},
 		success:function(result){
 			//$('#view').text(result)
 		  	let json=JSON.parse(result)
+		  	
 		  	jsonView(json)
 		}
 	})
-	
-	$('#findBtn').click(function(){
-		let fd=$('#fd').val()
-		let ss=$('#ss').val()
-		$.ajax({
-			type:'post',
-			url:'../food/food_find_ajax.do',
-			data:{"fd":fd,"ss":ss,"page":1},
-			success:function(result){
-				//$('#view').text(result)
-			  	let json=JSON.parse(result)
-			  	jsonView(json)
-			}
-		})
-	})
-	$('#ss').keydown(function(e){
-		if(e.keyCode==13)
-		{
-			let fd=$('#fd').val()
-			let ss=$('#ss').val()
-			$.ajax({
-				type:'post',
-				url:'../food/food_find_ajax.do',
-				data:{"fd":fd,"ss":ss,"page":1},
-				success:function(result){
-					//$('#view').text(result)
-				  	let json=JSON.parse(result)
-				  	jsonView(json)
-				}
-			})
-		}
-	})
-})
+}
+function prev(page)
+{
+	commons(page)
+}
+function next(page)
+{
+	commons(page)
+}
+function pageChange(page)
+{
+	commons(page)
+}
 function jsonView(json)
 {
 	// 이미지 
@@ -95,6 +100,46 @@ function jsonView(json)
             +'</div>'
             +'</div>'
 	})
+	
+	html+='<div class="col-12">'
+	html+='<div class="pagination-area d-sm-flex mt-15">'
+	html+='<nav aria-label="#">'
+	html+='<ul class="pagination">'
+      if(json[0].startPage>1)
+      {
+       html+='<li class="page-item">'
+       html+='<a class="page-link" onclick="prev('+(json[0].startPage-1)+')">이전 <i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
+       html+='</li>'
+      }
+            
+      for(let i=json[0].startPage;i<=json[0].endPage;i++)
+      {
+    	  if(json[0].curpage===i)
+    	  {
+    		  html+='<li class="page-item active"><a class="page-link" onclick="pageChange('+i+')">'+i+'</a></li>'
+    	  }
+    	  else
+    	  {
+    		  html+='<li class="page-item"><a class="page-link" onclick="pageChange('+i+')">'+i+'</a></li>'
+    	  }
+    	  
+      }
+            
+            if(json[0].endPage<json[0].totalpage)
+            {
+            	html+='<li class="page-item">'
+            	html+='<a class="page-link" onclick="next('+(json[0].endPage+1)+')">다음 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>'
+            	html+='</li>'
+            }
+            
+            html+='</ul>'
+            html+='</nav>'
+            html+='<div class="page-status">'
+            html+='<p>Page '+json[0].curpage+' of '+json[0].totalpage+' results</p>'
+            html+='</div>'
+            html+='</div>'
+            html+='</div>'
+
 	$('#view').html(html)
 	// 페이지 
 }
@@ -120,7 +165,7 @@ function jsonView(json)
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                             <select id="fd" class="input-sm">
+                             <select id="fd" class="form-control-sm">
                                <option value="name">업체명</option>
                                
               
@@ -128,7 +173,7 @@ function jsonView(json)
                                <option value="theme">테마</option>
                                <option value="address" selected>주소</option>
                              </select>
-                             <input type=text size=15 id="ss" class="input-sm">
+                             <input type=text size=15 id="ss" class="form-control-sm">
                              <input type=button value="검색" class="btn-sm btn-primary" id="findBtn">
                              
                              
@@ -147,35 +192,7 @@ function jsonView(json)
             <div class="row" id="view">
                
                 
-                
-                <%-- <div class="col-12">
-                    <div class="pagination-area d-sm-flex mt-15">
-                        <nav aria-label="#">
-                            <ul class="pagination">
-                               <c:if test="${startPage>1 }">
-                                 <li class="page-item">
-                                    <a class="page-link" href="../food/food_list.do?page=${startPage-1 }">이전 <i class="fa fa-angle-double-left" aria-hidden="true"></i></a>
-                                 </li>
-                                </c:if>
-                                
-                                <c:forEach var="i" begin="${startPage }" end="${endPage }">
-                                 <li class="page-item ${i==curpage?'active':'' }"><a class="page-link" href="../food/food_list.do?page=${i }">${i }</a></li>
-                                </c:forEach>
-                                
-                                <c:if test="${endPage<totalpage }">
-                                 <li class="page-item">
-                                    <a class="page-link" href="../food/food_list.do?page=${endPage+1 }">다음 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
-                                 </li>
-                                </c:if>
-                            </ul>
-                        </nav>
-                        <div class="page-status">
-                            <p>Page ${curpage } of ${totalpage } results</p>
-                        </div>
-                    </div>
-                </div>
-
-            --%>
+              
             </div> 
         </div>
     </section>

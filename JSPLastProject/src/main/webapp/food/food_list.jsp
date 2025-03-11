@@ -107,14 +107,13 @@
                                     <a class="page-link" href="../food/food_list.do?page=${endPage+1 }">다음 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
                                  </li>
                                 </c:if>
-                            </ul>
+                            </ul>s
                         </nav>
                         <div class="page-status">
                             <p>Page ${curpage } of ${totalpage } results</p>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>

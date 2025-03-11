@@ -49,7 +49,7 @@
 
         <!-- Instagram Item -->
        <c:forEach var="cook" items="${cList }">
-        <div class="instagram_gallery_item">
+        <div class="display">
             <!-- Instagram Thumb -->
             <img src="https://www.menupan.com${cook.poster }" alt="">
             <!-- Hover -->
