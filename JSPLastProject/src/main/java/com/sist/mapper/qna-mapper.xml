@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+   private int no,hit,group_id,group_step,group_tab;
+                  ===          =====================
+   private String name,id,subject,content,pwd,anok,dbday;
+                                              ====
+   private Date regdate;
+                ========
+                    group_id  group_step
+      AAAAA            2         0
+        =>BBBBB        2         1
+      DDDDD            1         0
+        =>CCCCC        1         1
+ -->
+<mapper namespace="com.sist.mapper.qna-mapper">
+   <select id="qnaListData" resultType="QnABoardVO" parameterType="hashmap">
+     SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,group_tab,num
+     FROM (SELECT no,subject,name,regdate,hit,group_tab,rownum as num
+     FROM (SELECT no,subject,name,regdate,hit,group_tab
+     FROM qnaBoard ORDER BY group_id DESC,group_step ASC))
+     WHERE num BETWEEN #{start} AND #{end}
+   </select>
+   <select id="qnaRowCount" resultType="int">
+     SELECT COUNT(*) FROM qnaBoard
+   </select>
+   <!-- 문의 -->
+   <insert id="qnaInsert" parameterType="QnABoardVO">
+    INSERT INTO qnaBoard(no,id,name,subject,content,pwd,group_id) 
+    VALUES((SELECT NVL(MAX(no)+1,1) FROM qnaBoard),
+      #{id},#{name},#{subject},#{content},#{pwd},
+      (SELECT NVL(MAX(group_id)+1,1) FROM qnaBoard))
+   </insert>
+   
+   <update id="qnaHitIncrement" parameterType="int">
+     UPDATE qnaBoard SET
+     hit=hit+1
+     WHERE no=#{no}
+   </update>
+   
+   <select id="qnaDetailData" resultType="QnABoardVO" parameterType="int">
+     SELECT no,name,id,subject,content,hit,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,group_id
+     FROM qnaBoard 
+     WHERE no=#{no}
+   </select>
+   <delete id="qnaDelete" parameterType="int">
+     DELETE FROM qnaBoard
+     WHERE group_id=#{group_id}
+   </delete>
+   <update id="qnaUpdate" parameterType="QnABoardVO">
+     UPDATE qnaBoard SET 
+     subject=#{subject},content=#{content}
+     WHERE no=#{no}
+   </update>
+   
+   <update id="qnaAdminAnDeleteOk" parameterType="int">
+     UPDATE qnaBoard SET
+     anok='n'
+     WHERE group_id=#{group_id}
+   </update>
+   <delete id="qnaAdminDelete" parameterType="int">
+     DELETE FROM qnaBoard
+     WHERE group_id=#{group_id} AND group_step=1
+   </delete>
+   
+   <!-- 관리자 -->
+   <select id="qnaAdminListData" resultType="QnABoardVO" parameterType="hashmap">
+     SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,group_tab,group_id,group_step,anok,num
+     FROM (SELECT no,subject,name,regdate,hit,group_tab,group_id,group_step,anok,rownum as num
+     FROM (SELECT no,subject,name,regdate,hit,group_tab,group_id,group_step,anok
+     FROM qnaBoard WHERE group_step=0 ORDER BY group_id DESC))
+     WHERE num BETWEEN #{start} AND #{end}
+   </select>
+   <select id="qnaAdminRowCount" resultType="int">
+     SELECT COUNT(*) FROM qnaBoard
+     WHERE group_step=0
+   </select>
+   <!-- 답변 -->
+   <select id="qnaAdminDetailData" resultType="QnABoardVO"
+    parameterType="int"
+   >
+     SELECT no,name,subject,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday,
+            content,group_id
+     FROM qnaBoard
+     WHERE group_id=#{group_id}
+   </select>
+   <update id="qnaAdminAnOKChange" parameterType="int">
+     UPDATE qnaBoard SET
+     anok='y'
+     WHERE group_id=#{group_id}
+   </update>
+   <insert id="qnaAdminInsert" parameterType="QnABoardVO">
+     INSERT INTO qnaBoard(no,id,name,subject,content,pwd,group_id,group_step,group_tab,anok) 
+     VALUES((SELECT NVL(MAX(no)+1,1) FROM qnaBoard),#{id},
+            '관리자',#{subject},#{content},#{pwd},#{group_id},1,1,'y')
+   </insert>
+</mapper>

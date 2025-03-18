@@ -22,7 +22,7 @@
 
     <!-- Responsive CSS -->
     <link href="../css/responsive/responsive.css" rel="stylesheet">
-
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=72fa81817487692b6dc093004af97650&libraries=services"></script>
 </head>
 
 <body>
@@ -49,7 +49,7 @@
 
         <!-- Instagram Item -->
        <c:forEach var="cook" items="${cList }">
-        <div class="display">
+        <div class="instagram_gallery_item">
             <!-- Instagram Thumb -->
             <img src="https://www.menupan.com${cook.poster }" alt="">
             <!-- Hover -->
@@ -70,7 +70,7 @@
     <jsp:include page="../main/footer.jsp"></jsp:include>
 
     <!-- Jquery-2.2.4 js -->
-    <script src="../js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- <script src="../js/jquery/jquery-2.2.4.min.js"></script> -->
     <!-- Popper js -->
     <script src="../js/bootstrap/popper.min.js"></script>
     <!-- Bootstrap-4 js -->

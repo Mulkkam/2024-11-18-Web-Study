@@ -17,8 +17,8 @@ function login(){
 	Shadowbox.open({
 		content:'../member/login.do',
 		player:'iframe',
-		width:320,
-		height:250,
+		width:300,
+		height:260,
 		title:'로그인'
 	})
 }
@@ -94,7 +94,7 @@ function login(){
                                     <c:if test="${sessionScope.id==null }">
                                      <div class="dropdown-menu" aria-labelledby="yummyDropdown">
                                         <a class="dropdown-item" href="../member/join.do">회원가입</a>
-                                        <a class="dropdown-item" href="archive.html">아이디찾기</a>
+                                        <a class="dropdown-item" href="../member/idfind.do">아이디찾기</a>
                                         <a class="dropdown-item" href="single.html">비밀번호찾기</a>
                            
                                      </div>
@@ -112,8 +112,9 @@ function login(){
                                    <div class="dropdown-menu" aria-labelledby="yummyDropdown">
                                         <a class="dropdown-item" href="../food/food_list.do">맛집목록</a>
                                         <a class="dropdown-item" href="../food/food_find.do">맛집검색</a>
+                                        <c:if test="${sessionScope.id!=null }">
                                         <a class="dropdown-item" href="../reserve/reserve_main.do">맛집예약</a>
-                           
+                                        </c:if>
                                    </div>
                                  
                           
@@ -140,7 +141,9 @@ function login(){
                                         <a class="dropdown-item" href="../recipe/recipe_list.do">레시피목록</a>
                                         <a class="dropdown-item" href="../recipe/recipe_find.do">레시피검색</a>
                                         <a class="dropdown-item" href="../recipe/chef_list.do">쉐프</a>
-                                        <a class="dropdown-item" href="single.html">레시피등록</a>
+                                        <c:if test="${sessionScope.id!=null }">
+                                         <a class="dropdown-item" href="single.html">레시피등록</a>
+                                        </c:if>
                                    </div>
                                  
                           
@@ -165,17 +168,21 @@ function login(){
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="yummyDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">커뮤니티</a>
                                    <div class="dropdown-menu" aria-labelledby="yummyDropdown">
-                                        <a class="dropdown-item" href="index.html">자유게시판</a>
-                                        <a class="dropdown-item" href="archive.html">묻고답하기</a>
-                                        <a class="dropdown-item" href="single.html">공지사항</a>
+                                        <a class="dropdown-item" href="../board/board_list.do">자유게시판</a>
+                                        <a class="dropdown-item" href="../notice/notice_user_list.do">공지사항</a>
+                                        
+                                        <a class="dropdown-item" href="../qna/qna_list.do">묻고답하기</a>
+                                        <c:if test="${sessionScope.id!=null }">
                                         <a class="dropdown-item" href="../chat/chat.do">실시간채팅</a>
-                           
+                                        </c:if>
                                    </div>
                                  
                           
                                 </li>
                                 <li class="nav-item">
+                                   <c:if test="${sessionScope.id!=null }">
                                     <a class="nav-link" href="#">빠른예약</a>
+                                   </c:if>
                                 </li>
                                 <c:if test="${sessionScope.id!=null }">
                                  <c:if test="${sessionScope.admin=='n' }">

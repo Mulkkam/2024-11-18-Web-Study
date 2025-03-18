@@ -111,8 +111,84 @@ public class RecipeModel {
      *   1. return "../main/main.jsp"
      *   2. return "../food/food.jsp"
      *   3. return "redirect:../main/main.do"
+     *   
+     *   1.돼지갈비는 찬물에 담궈 핏물을 제거해주세요. (물은 갈아주시면서) 핏물을 제거한 돼지갈비는 끓는물에 청주를 넣고 데쳐주세요. 찬물에 헹궈 여분의 불순물을 제거한뒤 물기를 제거해주세요.^https://recipe1.ezmember.co.kr/cache/recipe/2015/09/30/024bd28dab36732e1b35c7772a9a9f221.jpg
+         2.당근은 가장자리를 살짝 정리(?)해주세요. 마른 표고버섯은 미지근한물에 설탕을 조금 넣고 불린뒤 물기를 짜주세요.^https://recipe1.ezmember.co.kr/cache/recipe/2015/09/30/23c9af311cff069c19dea408d74f23c61.jpg
+         3.미리 만들어둔 양념장에 돼지갈비를 넣고 30분정도 재워두세요. 재워둔 돼지갈비에 멸치&다시마육수를 넣고 불을 켜주세요.^https://recipe1.ezmember.co.kr/cache/recipe/2015/09/30/3e69d9cf76d3afd74526a9a8aaf803581.jpg
+         4.돼지갈비가 반쯤 익어가면 야채들을 넣어주세요. 야채들이랑 돼지갈비랑 알맞게 맛있게 익었다면 마지막에 참기름을 두르고 센불에서 후다닥 섞어주세요.^https://recipe1.ezmember.co.kr/cache/recipe/2015/09/30/d7425dff8657b175d14831db4b06fa5a1.jpg
+
      */
-    
+    @RequestMapping("recipe/recipe_detail.do")
+    public String recipe_detail(HttpServletRequest request,
+    		HttpServletResponse response)
+    {
+    	String no=request.getParameter("no");
+    	RecipeDetailVO vo=RecipeDAO.recipeDetailData(Integer.parseInt(no));
+    	String data=vo.getData();
+    	data=data.replaceAll("구매", "");
+    	vo.setData(data);
+    	List<String> mList=new ArrayList<String>();
+    	List<String> iList=new ArrayList<String>();
+    	
+    	String[] datas=vo.getFoodmake().split("\n");
+    	for(String make:datas)
+    	{
+    		StringTokenizer st=new StringTokenizer(make,"^");
+    	    mList.add(st.nextToken());
+    	    iList.add(st.nextToken());
+    	}
+    	/*
+    	 *   <c:forEach var="make" item="${mList}">
+    	 *    
+    	 */
+    	
+    	ReplyVO rvo=new ReplyVO();
+  	    rvo.setRno(Integer.parseInt(no));
+  	    rvo.setType(2);
+  	    List<ReplyVO> list=ReplyDAO.replyListData(rvo);
+  	    int count=ReplyDAO.replyCount(rvo);
+  	    request.setAttribute("count", count);
+  	    request.setAttribute("rList", list);
+  	    
+    	request.setAttribute("vo", vo);
+    	request.setAttribute("mList", mList);
+    	request.setAttribute("iList", iList);
+    	request.setAttribute("main_jsp", "../recipe/recipe_detail.jsp");
+    	return "../main/main.jsp";
+    }
+    @RequestMapping("recipe/chef_make.do")
+    public String chef_make(HttpServletRequest request,
+    		HttpServletResponse response)
+    {
+    	String no=request.getParameter("no");
+    	String page=request.getParameter("page");
+    	if(page==null)
+    		page="1";
+    	int curpage=Integer.parseInt(page);
+    	Map map=new HashMap();
+    	map.put("start", (12*curpage)-11);
+    	map.put("end", 12*curpage);
+    	map.put("no", no);// no=1 no='1'
+    	List<RecipeVO> list=RecipeDAO.recipeChefMakeData(map);
+    	int totalpage=RecipeDAO.recipeChefMakeTotalPage(Integer.parseInt(no));
+    	final int BLOCK=10;
+  	    int startPage=((curpage-1)/BLOCK*BLOCK)+1;
+  	    int endPage=((curpage-1)/BLOCK*BLOCK)+BLOCK;
+  	  
+  	    if(endPage>totalpage)
+  		  endPage=totalpage;
+  	    
+  	    
+  	    request.setAttribute("list", list);
+	    request.setAttribute("curpage", curpage);
+	    request.setAttribute("totalpage", totalpage);
+	    request.setAttribute("startPage", startPage);
+	    request.setAttribute("endPage", endPage);
+	    request.setAttribute("no", no);
+	    request.setAttribute("chef", list.get(0).getChef());
+    	request.setAttribute("main_jsp", "../recipe/chef_make.jsp");
+    	return "../main/main.jsp";
+    }
     
 }
 

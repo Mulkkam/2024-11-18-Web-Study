@@ -7,6 +7,116 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" href="../food/map.css">
+<style type="text/css">
+a.updates{
+  cursor: pointer;
+}
+#likeBtnIcon{
+  cursor: pointer;
+}
+</style>
+
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=72fa81817487692b6dc093004af97650&libraries=services"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript">
+/*
+ *    CREATE TABLE all_like(
+		   lno NUMBER,
+		   id VARCHAR2(20),
+		   rno NUMBER,
+		   type NUMBER,
+		   CONSTRAINT al_lno_pk PRIMARY KEY(lno),
+		   CONSTRAINT al_id_fk FOREIGN KEY(id)
+		   REFERENCES project_member(id)
+		);
+		
+		CREATE SEQUENCE al_lno_seq
+		   START WITH 1
+		   INCREMENT BY 1
+		   NOCACHE
+		   NOCYCLE
+ */
+let bClick=false
+let likeCheck=false
+let rno=${param.fno}
+let id='${sessionScope.id}'
+$(function(){
+	if (id.length > 0)
+	{
+		$.ajax({
+	        type: 'post',
+	        url: '../like/likeCheck.do',
+	        data: {
+	            'rno': rno,
+	            'type': 1
+	        },
+	        success: function(result) {
+	            if (result === 'OK') {
+	                likeCheck = true
+	                $('#likeBtnIcon').attr('src', 'fullheart.png')
+	            } else {
+	                likeCheck = false
+	                $('#likeBtnIcon').attr('src', 'heart.png')
+	            }
+	        }
+	    })
+	}
+	$('#likeBtnIcon').click(function() {
+		if(likeCheck===true){
+			$.ajax({
+				type:'post',
+				url:'../like/likeOff.do',
+				data:{
+					'rno':rno,
+					'type':1
+				},
+				success:function(result){
+					if(result>=0){
+						likeCheck=false
+						$('#likeBtnIcon').attr('src', 'heart.png')
+						$('#likeCount').text(result)
+					}
+				}
+			})
+		}
+		else{
+			$.ajax({
+				type:'post',
+				url:'../like/likeOn.do',
+				data:{
+					'rno':rno,
+					'type':1
+				},
+				success:function(result){
+					if(result>=0){
+						likeCheck=true
+						$('#likeBtnIcon').attr('src', 'fullheart.png')
+						$('#likeCount').text(result)
+					}
+				}
+			})
+		}
+	})
+
+	$('.updates').click(function(){
+		let rno=$(this).attr("data-rno")
+		$('.ups').hide()
+		$(".updates").text("수정")
+		if(bClick===false)
+		{
+			$(this).text("취소")
+			$('#up'+rno).show()
+			bClick=true
+		}
+		else
+		{
+			$(this).text("수정")
+			$('#up'+rno).hide()
+			bClick=false
+		}
+	})
+})
+</script>
 </head>
 <body>
 <!-- ****** Breadcumb Area Start ****** -->
@@ -73,7 +183,7 @@
           </div>
          </td>
          <td colspan="2">
-           <h3>${vo.name }&nbsp;<span style="color: orange;">${vo.score }</span></h3>
+           <h3 data-id="${sessionScope.id }" id="id">${vo.name }&nbsp;<span style="color: orange;">${vo.score }</span></h3>
          </td>
        </tr>
        <tr>
@@ -112,10 +222,19 @@
         <tr>
          <td class="text-right">
           <c:if test="${sessionScope.id!=null }">
-          <a href="#" 
-             class="btn btn-sm btn-success">좋아요</a>
-          <a href="#" 
-             class="btn btn-sm btn-info">찜하기</a>
+            <!-- <button id="likeBtn">-->
+			<img src="../food/heart.png" id="likeBtnIcon" style="width:35px;height: 35px">
+			<span id="likeCount">&nbsp;&nbsp;&nbsp;${vo.likecount }
+			</span>
+			<!-- </button>--> 
+	        <c:if test="${jCount==0 }">
+	          <a href="../jjim/jjim_insert.do?rno=${vo.fno }&type=1" 
+	             class="btn btn-sm btn-outline-info">찜하기</a>
+	        </c:if>
+	        <c:if test="${jCount!=0 }">
+	          <span 
+	             class="btn btn-sm btn-outline-danger">찜하기</span>
+	        </c:if>
           <a href="#" 
              class="btn btn-sm btn-danger">예약하기</a>
           </c:if>
@@ -144,7 +263,7 @@
 			    </div>
 			</div>
 			
-			<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=72fa81817487692b6dc093004af97650&libraries=services"></script>
+			
 			<script>
 			// 마커를 담을 배열입니다
 			var markers = [];
@@ -365,86 +484,74 @@
 			</script>
                             <!-- Comment Area Start -->
                             <div class="comment_area section_padding_50 clearfix">
-                                <h4 class="mb-30">2 Comments</h4>
+                                <h4 class="mb-30">댓글(${count })</h4>
 
                                 <ol>
-                                    <!-- Single Comment Area -->
+                                   <c:forEach var="rvo" items="${rList }">
                                     <li class="single_comment_area">
                                         <div class="comment-wrapper d-flex">
                                             <!-- Comment Meta -->
                                             <div class="comment-author">
-                                                <img src="../img/blog-img/17.jpg" alt="">
+                                                <c:if test="${rvo.sex=='남자' }">
+                                                 <img src="../img/images/man.png" alt="">
+                                                </c:if>
+                                                <c:if test="${rvo.sex=='여자' }">
+                                                 <img src="../img/images/woman.png" alt="">
+                                                </c:if>
                                             </div>
                                             <!-- Comment Content -->
                                             <div class="comment-content">
-                                                <span class="comment-date text-muted">27 Aug 2018</span>
-                                                <h5>Brandon Kelley</h5>
-                                                <p>Neque porro qui squam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora.</p>
-                                                <a href="#">Like</a>
-                                                <a class="active" href="#">Reply</a>
-                                            </div>
-                                        </div>
-                                        <ol class="children">
-                                            <li class="single_comment_area">
-                                                <div class="comment-wrapper d-flex">
-                                                    <!-- Comment Meta -->
-                                                    <div class="comment-author">
-                                                        <img src="../img/blog-img/18.jpg" alt="">
-                                                    </div>
-                                                    <!-- Comment Content -->
-                                                    <div class="comment-content">
-                                                        <span class="comment-date text-muted">27 Aug 2018</span>
-                                                        <h5>Brandon Kelley</h5>
-                                                        <p>Neque porro qui squam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora.</p>
-                                                        <a href="#">Like</a>
-                                                        <a class="active" href="#">Reply</a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ol>
-                                    </li>
-                                    <li class="single_comment_area">
-                                        <div class="comment-wrapper d-flex">
-                                            <!-- Comment Meta -->
-                                            <div class="comment-author">
-                                                <img src="../img/blog-img/19.jpg" alt="">
-                                            </div>
-                                            <!-- Comment Content -->
-                                            <div class="comment-content">
-                                                <span class="comment-date text-muted">27 Aug 2018</span>
-                                                <h5>Brandon Kelley</h5>
-                                                <p>Neque porro qui squam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora.</p>
-                                                <a href="#">Like</a>
-                                                <a class="active" href="#">Reply</a>
+                                                <span class="comment-date text-muted">${rvo.dbday}</span>
+                                                <h5>${rvo.name }</h5>
+                                                <p>${rvo.msg }</p>
+                                                <c:if test="${sessionScope.id!=null }">
+                                                   <a href="#" class="active">좋아요</a>
+                                                   <a href="#" class="active">댓글</a>
+                                                   <c:if test="${sessionScope.id==rvo.id }">
+                                                     <a class="active updates" data-rno="${rvo.cno }">수정</a>
+                                                     <a href="../reply/reply_delete.do?cno=${rvo.cno }&rno=${rvo.rno}&type=1" class="active">삭제</a>
+                                                   </c:if>
+                                                </c:if>
+                                                
+                                                <div class="comment-form ups" style="display:none" id="up${rvo.cno }">
+                                  
+				                                    <form action="../reply/reply_update.do" method="post">
+				                                        
+				                                        <div class="form-group">
+				                                            <textarea name="msg" id="msg" cols="50" rows="3" placeholder="Message" style="float: left" required>${rvo.msg }</textarea>
+				                                            <input type=hidden name="type" value="1">
+				                                            <input type=hidden name="rno" value="${vo.fno }">
+				                                            <input type=hidden name="cno" value="${rvo.cno }">
+				                                            <button type="submit" class="btn btn-primary" style="width:100px;height: 85px;float: left">댓글수정</button>
+				                                        </div>
+				                                        
+				                                    </form>
+				                                </div>
                                             </div>
                                         </div>
                                     </li>
+                                    </c:forEach>
                                 </ol>
                             </div>
 
                             <!-- Leave A Comment -->
+                            <c:if test="${sessionScope.id!=null }">
                             <div class="leave-comment-area section_padding_50 clearfix">
                                 <div class="comment-form">
-                                    <h4 class="mb-30">Leave A Comment</h4>
-
-                                    <!-- Comment Form -->
-                                    <form action="#" method="post">
+                                  
+                                    <form action="../reply/reply_insert.do" method="post">
+                                        
                                         <div class="form-group">
-                                            <input type="text" class="form-control" id="contact-name" placeholder="Name">
+                                            <textarea name="msg" id="msg" cols="70" rows="4" placeholder="Message" style="float: left" required></textarea>
+                                            <input type=hidden name="type" value="1">
+                                            <input type=hidden name="rno" value="${vo.fno }">
+                                            <button type="submit" class="btn btn-primary" style="width:100px;height: 95px;float: left">댓글쓰기</button>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" id="contact-email" placeholder="Email">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="contact-website" placeholder="Website">
-                                        </div>
-                                        <div class="form-group">
-                                            <textarea class="form-control" name="message" id="message" cols="30" rows="10" placeholder="Message"></textarea>
-                                        </div>
-                                        <button type="submit" class="btn contact-btn">Post Comment</button>
+                                        
                                     </form>
                                 </div>
                             </div>
+                            </c:if>
 
                         </div>
                     </div>
