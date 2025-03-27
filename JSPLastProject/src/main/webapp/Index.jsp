@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%--
+     <option ${a==1?"selected":""}>
+ --%>
+<%--
       동적쿼리 
       프로시저 / 트리거 
                 | like / reply
@@ -16,7 +19,7 @@
  *         |
  *        DispatcherServlet 
  *         |
- *        등록 위치 @RequestMapping() : URI 매핑
+ *        등록 위치 @RequestMapping() : URI 매핑 
  *         |
  *        사용자가 처리한 메소드 찾기 
                       | DAO연동 

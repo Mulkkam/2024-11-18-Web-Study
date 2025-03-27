@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.reserve-mapper">
+ <!-- 맛집 정보 읽기 -->
+ <select id="reserveFoodData" resultType="FoodVO" parameterType="hashmap">
+   SELECT fno,poster,name,rdays,rownum 
+   FROM (SELECT fno,poster,name,rdays 
+   FROM project_food WHERE type LIKE '%'||#{type}||'%' ORDER BY hit DESC)
+   WHERE rownum&lt;=50
+ </select>
+ 
+ <!-- 시간읽기 -->
+ <select id="reserveDayTimeInfoData" resultType="string"
+   parameterType="int"
+ >
+   SELECT time FROM reserve_day
+   WHERE rno=#{rno}
+ </select>
+ <select id="reserveGetTimeData" resultType="string"
+   parameterType="int"
+ >
+   SELECT time FROM reserve_time
+   WHERE tno=#{tno}
+ </select>
+ <!-- 
+    rno NUMBER,
+   id VARCHAR2(20),
+   fno NUMBER,
+   day VARCHAR2(20) CONSTRAINT ri_day_nn NOT NULL,
+   time VARCHAR2(20) CONSTRAINT ri_time_nn NOT NULL,
+   inwon VARCHAR2(20) CONSTRAINT ri_inwon_nn NOT NULL,
+   regdate DATE DEFAULT SYSDATE,
+   isok CHAR(1) DEFAULT 'n',
+  -->
+ <insert id="reserveInsert" parameterType="ReserveVO">
+  INSERT INTO reserve_info VALUES(
+    (SELECT NVL(MAX(rno)+1,1) FROM reserve_info),
+    #{id},#{fno},#{day},#{time},#{inwon},
+    SYSDATE,'n'
+  )
+ </insert>
+ <!-- 
+    private int rno,fno;
+    private String id,day,time,inwon,isok;
+    private Date regdate;
+    private FoodVO fvo=new FoodVO();
+  -->
+ <!-- mypage 출력 목록 -->
+ <resultMap type="ReserveVO" id="reserveMap">
+   <result property="fvo.poster" column="poster"/>
+   <result property="fvo.address" column="address"/>
+   <result property="fvo.phone" column="phone"/>
+   <result property="fvo.theme" column="theme"/>
+   <result property="fvo.score" column="score"/>
+   <result property="fvo.content" column="content"/>
+   <result property="fvo.name" column="name"/>
+ </resultMap>
+ <select id="reserveMyPageData" resultMap="reserveMap" parameterType="string">
+   SELECT rno,ri.fno,day,ri.time,inwon,isok,name,poster,address,phone,
+   TO_CHAR(regdate,'YYYY-MM-DD') as dbday
+   FROM reserve_info ri , project_food pf
+   WHERE ri.fno=pf.fno
+   AND id=#{id}
+   ORDER BY rno DESC
+ </select>
+ <!-- admin 출력 목록 -->
+ <select id="reserveAdminPageData" resultMap="reserveMap" parameterType="string">
+   SELECT rno,id,ri.fno,day,ri.time,inwon,isok,name,poster,address,phone,
+   TO_CHAR(regdate,'YYYY-MM-DD') as dbday
+   FROM reserve_info ri , project_food pf
+   WHERE ri.fno=pf.fno
+   ORDER BY rno DESC
+ </select>
+ <!-- admin에서 승인 -->
+ <update id="reserveAdminOk" parameterType="int">
+   UPDATE reserve_info SET
+   isok='y'
+   WHERE rno=#{rno}
+ </update>
+ <!-- mypage에서 예약 정보 확인 -->
+ <select id="reserveMypageInfoData" resultMap="reserveMap" parameterType="int">
+   SELECT rno,day,ri.time,inwon,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS') as dbday,
+          name,poster,address,phone,score,content,theme
+   FROM reserve_info ri , project_food pf
+   WHERE ri.fno=pf.fno
+   AND rno=#{rno}
+ </select>
+ <!-- 예약 취소 -->
+ <delete id="reserveMyPageCancel" parameterType="int">
+   DELETE FROM reserve_info
+   WHERE rno=#{rno}
+ </delete>
+ 
+</mapper>
